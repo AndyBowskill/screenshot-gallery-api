@@ -5,8 +5,6 @@ const fetch = require('node-fetch');
 const app = express();
 
 const token = '3BPHBYZ-CJM4MKA-J9W6EE1-M6S0NWG';
-const width = 1920;
-const height = 1080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,11 +15,16 @@ app.post('/screenshot', (request, response) => {
   const encodedUrl = encodeURIComponent(url);
 
   let query = 'https://shot.screenshotapi.net/screenshot';
-  query += `?token=${token}&url=${encodedUrl}&width=${width}&height=${height}&output=json`;
+  query += `?token=${token}&url=${encodedUrl}&width=900&height=506&output=json`;
+
+  let screenshots = [];
 
   fetch(query)
     .then((response) => response.json())
-    .then((data) => response.status(200).json(data))
+    .then((screenshot) => {
+      screenshots.push(screenshot);
+      response.status(200).json(screenshots) 
+    })
     .catch((error) => response.status(500).json(error));
 });
 
