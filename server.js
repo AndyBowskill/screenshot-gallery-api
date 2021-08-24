@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+require('dotenv').config();
 
 const app = express();
-
-const token = '3BPHBYZ-CJM4MKA-J9W6EE1-M6S0NWG';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,7 +14,7 @@ app.post('/screenshot', (request, response) => {
   const encodedUrl = encodeURIComponent(url);
 
   let query = 'https://shot.screenshotapi.net/screenshot';
-  query += `?token=${token}&url=${encodedUrl}&width=900&height=506&output=json`;
+  query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=900&height=506&output=json`;
 
   let screenshots = [];
 
@@ -23,7 +22,7 @@ app.post('/screenshot', (request, response) => {
     .then((response) => response.json())
     .then((screenshot) => {
       screenshots.push(screenshot);
-      response.status(200).json(screenshots) 
+      response.status(200).json(screenshots);
     })
     .catch((error) => response.status(500).json(error));
 });
