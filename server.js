@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const knex = require('knex');
 require('dotenv').config();
 
 const app = express();
@@ -8,6 +9,33 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : process.env.DB_HOST,
+    user : process.env.DB_USER,
+    password : process.env.DB_PASSWORD,
+    database : process.env.DB
+  }
+});
+
+app.post('/register', (request, response) => {
+  const {email, name, password} = request.body;
+  db('users')
+    .returning()
+    .insert({
+      email: email,
+      name: name,
+      joined: new Date
+    })
+    .then(user => {
+      response.json(user[0]);
+    })
+    .catch(error => {
+      response.status(400).json('Error registering an user.');
+    })
+});
 
 app.post('/screenshot', (request, response) => {
   const { url } = request.body;
