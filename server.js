@@ -24,34 +24,36 @@ const db = knex({
 app.post('/register', (request, response) => {
   const { email, name, password } = request.body;
 
-  bcrypt.hash(password, 10, function(error, hash) {
+  bcrypt.hash(password, 10, function (error, hash) {
     if (error) {
       response.status(400).json('Error registering an user.');
     } else {
-      db.transaction(trx => {
-        trx.insert({
-          hash: hash,
-          email: email
-        })
-        .into('login')
-        .returning('email')
-        .then(loginEmail => {
-          return trx('users')
-          .returning('*')
+      db.transaction((trx) => {
+        trx
           .insert({
-            email: loginEmail[0],
-            name: name,
-            joined: new Date(),
+            hash: hash,
+            email: email,
           })
-          .then(user => {
-            response.json(user[0]);
+          .into('login')
+          .returning('email')
+          .then((loginEmail) => {
+            return trx('users')
+              .returning('*')
+              .insert({
+                email: loginEmail[0],
+                name: name,
+                joined: new Date(),
+              })
+              .then((user) => {
+                response.json(user[0]);
+              });
           })
-        })
-        .then(trx.commit)
-        .catch(trx.rollback)
-      })
-      .catch(error => response.status(400).json('Error registering an user.'))
-    };
+          .then(trx.commit)
+          .catch(trx.rollback);
+      }).catch((error) =>
+        response.status(400).json('Error registering an user.')
+      );
+    }
   });
 });
 
