@@ -57,6 +57,33 @@ app.post('/register', (request, response) => {
   });
 });
 
+app.post('/signin', (request, response) => {
+  const { email, password } = request.body;
+
+  db.select('email', 'hash')
+    .from('login')
+    .where('email', '=', email)
+    .then((data) => {
+      bcrypt.compare(password, data[0].hash, function (error, isValid) {
+        if (error) {
+          response.status(400).json('Error signing in an user.');
+        } else {
+          if (isValid) {
+            return db
+              .select('*')
+              .from('users')
+              .where('email', '=', email)
+              .then((user) => {
+                response.json(user[0]);
+              });
+          } else {
+            response.status(400).json('Error signing in an user.');
+          }
+        }
+      });
+    });
+});
+
 app.post('/screenshot', (request, response) => {
   const { url } = request.body;
   const encodedUrl = encodeURIComponent(url);
