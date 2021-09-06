@@ -85,19 +85,30 @@ app.post('/signin', (request, response) => {
 });
 
 app.post('/screenshot', (request, response) => {
-  const { url } = request.body;
+  const { id, url } = request.body;
   const encodedUrl = encodeURIComponent(url);
 
   let query = 'https://shot.screenshotapi.net/screenshot';
-  query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=900&height=506&output=json`;
+  query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=900&height=506&&output=json&file_type=webp&image_quality=50&block_ads=true&no_cookie_banners=true&wait_for_event=load`;
 
   let screenshots = [];
 
   fetch(query)
     .then((response) => response.json())
-    .then((screenshot) => {
-      screenshots.push(screenshot);
-      response.status(200).json(screenshots);
+    .then((data) => {
+      console.log(data.screenshot);
+
+      db.insert({
+        id: id,
+        url: data.screenshot,
+      })
+        .into('screenshots')
+        .returning('url')
+        .then((url) => {
+          screenshots.push(data);
+          response.status(200).json(screenshots);
+        })
+        .catch((error) => response.status(500).json(error));
     })
     .catch((error) => response.status(500).json(error));
 });
