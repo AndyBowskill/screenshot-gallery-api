@@ -63,8 +63,9 @@ app.post('/signin', (request, response) => {
   db.select('email', 'hash')
     .from('login')
     .where('email', '=', email)
-    .then((data) => {
-      bcrypt.compare(password, data[0].hash, function (error, isValid) {
+    .then((loginEmail) => {
+      
+      bcrypt.compare(password, loginEmail[0].hash, function (error, isValid) {
         if (error) {
           response.status(400).json('Error signing in an user.');
         } else {
@@ -74,7 +75,25 @@ app.post('/signin', (request, response) => {
               .from('users')
               .where('email', '=', email)
               .then((user) => {
-                response.json(user[0]);
+                
+                db.select('*')
+                  .from('screenshots')
+                  .where('email', '=', email)
+                  .then((screenshots) => {
+                    const data = {
+                      screenshots: screenshots,
+                      user: {
+                        id: user[0].id,
+                        email: user[0].email,
+                        name: user[0].name,
+                      },
+                    };
+
+                    response.status(200).json(data);
+                  })
+                  .catch((error) =>
+                    response.status(400).json('Error signing in an user.')
+                  );
               });
           } else {
             response.status(400).json('Error signing in an user.');
@@ -85,28 +104,37 @@ app.post('/signin', (request, response) => {
 });
 
 app.post('/screenshot', (request, response) => {
-  const { id, url } = request.body;
+  const { email, url } = request.body;
   const encodedUrl = encodeURIComponent(url);
 
   let query = 'https://shot.screenshotapi.net/screenshot';
   query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=900&height=506&&output=json&file_type=webp&image_quality=50&block_ads=true&no_cookie_banners=true&wait_for_event=load`;
 
-  let screenshots = [];
-
   fetch(query)
     .then((response) => response.json())
-    .then((data) => {
-      console.log(data.screenshot);
-
+    .then((screenshotAPI) => {
       db.insert({
-        id: id,
-        url: data.screenshot,
+        email: email,
+        screenshot: screenshotAPI.screenshot,
+        url: screenshotAPI.url,
       })
         .into('screenshots')
-        .returning('url')
-        .then((url) => {
-          screenshots.push(data);
-          response.status(200).json(screenshots);
+        .returning('screenshot')
+        .then((screenshot) => {
+          db.select('*')
+            .from('screenshots')
+            .where('email', '=', email)
+            .then((screenshots) => {
+              const data = {
+                screenshots: screenshots,
+                user: {
+                  email: email,
+                },
+              };
+
+              response.status(200).json(data);
+            })
+            .catch((error) => response.status(500).json(error));
         })
         .catch((error) => response.status(500).json(error));
     })
