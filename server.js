@@ -38,6 +38,6 @@ app.post('/screenshot', (request, response) => {
   screenshots.handleScreenshots(request, response, db);
 });
 
-app.listen(3000, () => {
-  console.log('The app is listening on port 3000.');
+app.listen(process.env.PORT, () => {
+  console.log(`The app is listening on port ${process.env.PORT}.`);
 });
