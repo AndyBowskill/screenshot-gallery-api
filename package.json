@@ -12,7 +12,7 @@
     "nodemon": "^2.0.12"
   },
   "scripts": {
-    "start": "node fileName.js",
-    "start:dev": "nodemon fileName.js"
+    "start": "node server.js",
+    "start:dev": "nodemon server.js"
   }
 }
