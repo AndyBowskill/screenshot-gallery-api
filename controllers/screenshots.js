@@ -1,10 +1,10 @@
 const handleScreenshots = (request, response, db) => {
   const { email, url } = request.body;
   const encodedUrl = encodeURIComponent(url);
-
+  console.log('API key: ', process.env.SCREENSHOT_API_KEY);
   let query = 'https://shot.screenshotapi.net/screenshot';
   query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=900&height=506&&output=json&file_type=webp&image_quality=50&block_ads=true&no_cookie_banners=true&wait_for_event=load`;
-
+  console.log('Query: ', query);
   fetch(query)
     .then((response) => response.json())
     .then((screenshotAPI) => {
