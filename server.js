@@ -25,6 +25,9 @@ const db = knex({
   },
 });
 
+app.get('/', (request, response) => {
+  response.send('The app is working.');
+});
 app.post('/register', (request, response) => {
   register.handleRegister(request, response, db, bcrypt);
 });
