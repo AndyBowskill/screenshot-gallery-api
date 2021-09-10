@@ -1,6 +1,10 @@
 const handleSignIn = (request, response, db, bcrypt) => {
   const { email, password } = request.body;
 
+  if (!email || !password) {
+    response.status(400).json('Error signing in an user.');
+  }
+
   db.select('email', 'hash')
     .from('login')
     .where('email', '=', email)

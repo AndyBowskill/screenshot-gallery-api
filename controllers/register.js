@@ -1,6 +1,10 @@
 const handleRegister = (request, response, db, bcrypt) => {
   const { email, name, password } = request.body;
 
+  if (!email || !name || !password) {
+    response.status(400).json('Error registering an user.');
+  }
+
   bcrypt.hash(password, 10, function (error, hash) {
     if (error) {
       response.status(400).json('Error registering an user.');
