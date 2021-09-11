@@ -21,6 +21,7 @@ const handleScreenshots = (request, response, db) => {
           db.select('*')
             .from('screenshots')
             .where('email', '=', email)
+            .orderBy('id', 'desc')
             .then((screenshots) => {
               const data = {
                 screenshots: screenshots,
