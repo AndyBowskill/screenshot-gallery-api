@@ -5,7 +5,7 @@ const handleScreenshots = (request, response, db) => {
   const encodedUrl = encodeURIComponent(url);
 
   let query = 'https://shot.screenshotapi.net/screenshot';
-  query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=800&height=600&fresh=true&output=json&file_type=webp&block_ads=true&no_cookie_banners=true&wait_for_event=load`;
+  query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=600&height=450&fresh=true&output=json&file_type=webp&block_ads=true&no_cookie_banners=true&wait_for_event=load`;
 
   fetch(query)
     .then((response) => response.json())
