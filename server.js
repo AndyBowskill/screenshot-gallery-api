@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const fetch = require('node-fetch');
 const knex = require('knex');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
