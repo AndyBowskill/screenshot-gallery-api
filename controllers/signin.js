@@ -22,6 +22,7 @@ const handleSignIn = (request, response, db, bcrypt) => {
                 db.select('*')
                   .from('screenshots')
                   .where('email', '=', email)
+                  .orderBy('id', 'desc')
                   .then((screenshots) => {
                     const data = {
                       screenshots: screenshots,
