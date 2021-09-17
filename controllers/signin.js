@@ -1,8 +1,11 @@
-const handleSignIn = (request, response, db, bcrypt) => {
-  const { email, password } = request.body;
+const db = require('../config/db');
+const bcrypt = require('bcrypt');
+
+const handleSignIn = (req, res) => {
+  const { email, password } = req.body;
 
   if (!email || !password) {
-    response.status(400).json('Error signing in an user.');
+    res.status(400).json('Error signing in an user.');
   }
 
   db.select('email', 'hash')
@@ -11,7 +14,7 @@ const handleSignIn = (request, response, db, bcrypt) => {
     .then((loginEmail) => {
       bcrypt.compare(password, loginEmail[0].hash, function (error, isValid) {
         if (error) {
-          response.status(400).json('Error signing in an user.');
+          res.status(400).json('Error signing in an user.');
         } else {
           if (isValid) {
             return db
@@ -33,14 +36,14 @@ const handleSignIn = (request, response, db, bcrypt) => {
                       },
                     };
 
-                    response.status(200).json(data);
+                    res.status(200).json(data);
                   })
                   .catch((error) =>
-                    response.status(400).json('Error signing in an user.')
+                    res.status(400).json('Error signing in an user.')
                   );
               });
           } else {
-            response.status(400).json('Error signing in an user.');
+            res.status(400).json('Error signing in an user.');
           }
         }
       });

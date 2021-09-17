@@ -1,6 +1,7 @@
+const db = require('../config/db');
 const fetch = require('node-fetch');
 
-const handleScreenshots = (request, response, db) => {
+const handleScreenshots = (request, response) => {
   const { email, url } = request.body;
   const encodedUrl = encodeURIComponent(url);
 

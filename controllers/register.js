@@ -1,4 +1,7 @@
-const handleRegister = (request, response, db, bcrypt) => {
+const db = require('../config/db');
+const bcrypt = require('bcrypt');
+
+const handleRegister = (request, response) => {
   const { email, name, password } = request.body;
 
   if (!email || !name || !password) {
