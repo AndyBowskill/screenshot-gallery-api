@@ -9,7 +9,7 @@ const handleSignIn = (req, res) => {
     res.status(400).json('Error signing in an user.');
   }
 
-  const valid = database.signIn(email, password);
+  const { valid, data } = database.signIn(email, password);
 
   if (valid) {
     res.status(200).json(data);

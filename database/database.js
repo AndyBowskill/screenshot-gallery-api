@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const signIn = (email, password) => {
   let valid = false;
+  let data = {};
 
   db.select('email', 'hash')
     .from('login')
@@ -22,7 +23,7 @@ const signIn = (email, password) => {
                   .where('email', '=', email)
                   .orderBy('id', 'desc')
                   .then((screenshots) => {
-                    const data = {
+                    data = {
                       screenshots: screenshots,
                       user: {
                         id: user[0].id,
@@ -43,7 +44,7 @@ const signIn = (email, password) => {
     })
     .catch((error) => console.log(error));
 
-  return valid;
+  return valid, data;
 };
 
 module.exports = {
