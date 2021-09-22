@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../config/database');
 const fetch = require('node-fetch');
 
 const handleScreenshots = (request, response) => {
