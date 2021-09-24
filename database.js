@@ -11,7 +11,7 @@ const db = knex({
   },
 });
 
-async function signin(email, password) {
+export async function signin(email, password) {
   let valid = false;
   let data = {};
 
@@ -58,5 +58,3 @@ async function comparePassword(password, hash) {
   }
   return false;
 }
-
-export default signin;

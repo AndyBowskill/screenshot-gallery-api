@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-export default function (database) {
+export default function (signin) {
   const app = express();
 
   app.use(express.json());
@@ -19,7 +19,7 @@ export default function (database) {
     }
 
     try {
-      const { valid, data } = await database.signin(email, password);
+      const { valid, data } = await signin(email, password);
 
       if (valid) {
         res.status(200).json(data);
