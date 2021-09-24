@@ -1,5 +1,5 @@
-const db = require('../config/database');
-const fetch = require('node-fetch');
+import db from '../config/database.js';
+import fetch from 'node-fetch';
 
 const handleScreenshots = (request, response) => {
   const { email, url } = request.body;
@@ -40,6 +40,4 @@ const handleScreenshots = (request, response) => {
     .catch((error) => response.status(500).json(error));
 };
 
-module.exports = {
-  handleScreenshots,
-};
+export default handleScreenshots;

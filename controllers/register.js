@@ -1,5 +1,5 @@
-const db = require('../config/database');
-const bcrypt = require('bcrypt');
+import db from '../config/database.js';
+import bcrypt from 'bcrypt';
 
 const handleRegister = (request, response) => {
   const { email, name, password } = request.body;
@@ -41,6 +41,4 @@ const handleRegister = (request, response) => {
   });
 };
 
-module.exports = {
-  handleRegister,
-};
+export default handleRegister;
