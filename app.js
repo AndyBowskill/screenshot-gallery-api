@@ -16,6 +16,7 @@ export default function (signin) {
 
     if (!email || !password) {
       res.status(400).json('Error signing in an user.');
+      return;
     }
 
     try {
@@ -27,7 +28,7 @@ export default function (signin) {
         res.status(400).json('Error signing in an user.');
       }
     } catch (error) {
-      console.log(error);
+      res.status(500).json(error);
     }
   });
 
