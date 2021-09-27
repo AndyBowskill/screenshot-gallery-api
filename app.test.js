@@ -2,9 +2,54 @@ import request from 'supertest';
 import makeApp from './app';
 import { jest } from '@jest/globals';
 
+const register = jest.fn();
 const signin = jest.fn();
 
-const app = makeApp({ signin });
+const app = makeApp({ register, signin });
+
+describe('POST /register', () => {
+  beforeEach(() => {
+    register.mockReset();
+  });
+
+  describe('when passed nothing', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app).post('/register');
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing name and password', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .post('/register')
+        .send({ email: 'johnsmith@gmail.com' });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing email and password', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .post('/register')
+        .send({ name: 'John Smith' });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing email and name', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .post('/register')
+        .send({ password: '123123' });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+});
 
 describe('POST /signin', () => {
   beforeEach(() => {
@@ -19,7 +64,7 @@ describe('POST /signin', () => {
     });
   });
 
-  describe('when passed a missing email or password', () => {
+  describe('when passed a missing password', () => {
     test('should get back a status code of 400', async () => {
       const response = await request(app)
         .post('/signin')
@@ -27,7 +72,9 @@ describe('POST /signin', () => {
 
       expect(response.statusCode).toBe(400);
     });
+  });
 
+  describe('when passed a missing email', () => {
     test('should get back a status code of 400', async () => {
       const response = await request(app)
         .post('/signin')

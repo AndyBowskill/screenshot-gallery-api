@@ -11,6 +11,49 @@ const db = knex({
   },
 });
 
+export async function register(email, name, password) {
+  let valid = false;
+  let data = {};
+
+  if (!email || !name || !password) {
+    return { valid, data };
+  }
+
+  try {
+    const hash = await newPassword(password);
+    if (hash) {
+      await db.transaction(async (trx) => {
+        await trx('login')
+          .insert({
+            hash: hash,
+            email: email,
+          })
+          .transacting(trx);
+
+        await trx('users')
+          .insert({
+            email: email,
+            name: name,
+            joined: new Date(),
+          })
+          .transacting(trx);
+
+        data = {
+          user: {
+            email: email,
+            name: name,
+          },
+        };
+        valid = true;
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { valid, data };
+}
+
 export async function signin(email, password) {
   let valid = false;
   let data = {};
@@ -48,6 +91,15 @@ export async function signin(email, password) {
   }
 
   return { valid, data };
+}
+
+async function newPassword(password) {
+  try {
+    return await bcrypt.hash(password, 10);
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
 }
 
 async function comparePassword(password, hash) {
