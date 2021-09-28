@@ -4,8 +4,9 @@ import { jest } from '@jest/globals';
 
 const register = jest.fn();
 const signin = jest.fn();
+const screenshot = jest.fn();
 
-const app = makeApp({ register, signin });
+const app = makeApp({ register, signin, screenshot });
 
 describe('POST /register', () => {
   beforeEach(() => {
@@ -79,6 +80,40 @@ describe('POST /signin', () => {
       const response = await request(app)
         .post('/signin')
         .send({ password: '123123' });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+});
+
+describe('POST /screenshot', () => {
+  beforeEach(() => {
+    screenshot.mockReset();
+  });
+
+  describe('when passed nothing', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app).post('/screenshot');
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing email', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .post('/screenshot')
+        .send({ url: 'www.amazon.co.uk' });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing url', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .post('/screenshot')
+        .send({ email: 'johnsmith@gmail.com' });
 
       expect(response.statusCode).toBe(400);
     });

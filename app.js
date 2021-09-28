@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fetch from 'node-fetch';
 
-export default function (register, signin) {
+export default function (register, signin, screenshot) {
   const app = express();
 
   app.use(express.json());
@@ -47,6 +48,38 @@ export default function (register, signin) {
         res.status(200).json(data);
       } else {
         res.status(400).json('Error signing in an user.');
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  });
+
+  app.post('/screenshot', async (req, res) => {
+    const { email, url } = req.body;
+    const encodedUrl = encodeURIComponent(url);
+
+    if (!email || !url) {
+      res.status(400).json('Error getting a screenshot.');
+      return;
+    }
+
+    try {
+      let query = 'https://shot.screenshotapi.net/screenshot';
+      query += `?token=${process.env.SCREENSHOT_API_KEY}&url=${encodedUrl}&width=600&height=450&fresh=true&output=json&file_type=webp&block_ads=true&no_cookie_banners=true&wait_for_event=load`;
+
+      const resScreenshotAPI = await fetch(query);
+      const screenshotAPI = await resScreenshotAPI.json();
+
+      const { valid, data } = await screenshot(
+        email,
+        screenshotAPI.screenshot,
+        screenshotAPI.url
+      );
+
+      if (valid) {
+        res.status(200).json(data);
+      } else {
+        res.status(400).json('Error getting a screenshot.');
       }
     } catch (error) {
       res.status(500).json(error);

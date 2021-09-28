@@ -1,13 +1,23 @@
 import knex from 'knex';
 import { newPassword, comparePassword } from './databaseUtilities.js';
 
+// const db = knex({
+//   client: 'pg',
+//   connection: {
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: {
+//       rejectUnauthorized: false,
+//     },
+//   },
+// });
+
 const db = knex({
   client: 'pg',
   connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    host: '127.0.0.1',
+    user: 'postgres',
+    password: '',
+    database: 'screenshot-gallery',
   },
 });
 
@@ -86,6 +96,43 @@ export async function signin(email, password) {
       };
       valid = true;
     }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { valid, data };
+}
+
+export async function screenshot(email, screenshot, url) {
+  let valid = false;
+  let data = {};
+
+  if (!email || !screenshot || !url) {
+    return { valid, data };
+  }
+
+  try {
+    const newScreenshotRow = await db
+      .insert({
+        email: email,
+        screenshot: screenshot,
+        url: url,
+      })
+      .into('screenshots');
+
+    const screenshotRows = await db
+      .select('*')
+      .from('screenshots')
+      .where('email', '=', email)
+      .orderBy('id', 'desc');
+
+    data = {
+      screenshots: screenshotRows,
+      user: {
+        email: email,
+      },
+    };
+    valid = true;
   } catch (error) {
     console.log(error);
   }
