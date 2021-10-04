@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 
-export default function (register, signin, screenshot) {
+export default function (database) {
   const app = express();
 
   app.use(express.json());
@@ -21,7 +21,7 @@ export default function (register, signin, screenshot) {
     }
 
     try {
-      const { valid, data } = await register(email, name, password);
+      const { valid, data } = await database.register(email, name, password);
 
       if (valid) {
         res.status(200).json(data);
@@ -42,7 +42,7 @@ export default function (register, signin, screenshot) {
     }
 
     try {
-      const { valid, data } = await signin(email, password);
+      const { valid, data } = await database.signin(email, password);
 
       if (valid) {
         res.status(200).json(data);
@@ -70,7 +70,7 @@ export default function (register, signin, screenshot) {
       const resScreenshotAPI = await fetch(query);
       const screenshotAPI = await resScreenshotAPI.json();
 
-      const { valid, data } = await screenshot(
+      const { valid, data } = await database.screenshot(
         email,
         screenshotAPI.screenshot,
         screenshotAPI.url

@@ -50,6 +50,23 @@ describe('POST /register', () => {
       expect(response.statusCode).toBe(400);
     });
   });
+
+  describe('when passed valid and complete data', () => {
+    test('should get back a status code of 200', async () => {
+      const body = {
+        email: 'johnsmith1@gmail.com',
+        name: 'John Smith',
+        password: '123123',
+      };
+
+      const response = await request(app).post('/register').send(body);
+
+      expect(register.mock.calls.length).toBe(1);
+      expect(register.mock.calls[0][0]).toBe(body.email);
+      expect(register.mock.calls[0][1]).toBe(body.name);
+      expect(register.mock.calls[0][2]).toBe(body.password);
+    });
+  });
 });
 
 describe('POST /signin', () => {
@@ -82,6 +99,21 @@ describe('POST /signin', () => {
         .send({ password: '123123' });
 
       expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed valid and complete data', () => {
+    test('should get back a status code of 200', async () => {
+      const body = {
+        email: 'johnsmith1@gmail.com',
+        password: '123123',
+      };
+
+      const response = await request(app).post('/signin').send(body);
+
+      expect(signin.mock.calls.length).toBe(1);
+      expect(signin.mock.calls[0][0]).toBe(body.email);
+      expect(signin.mock.calls[0][1]).toBe(body.password);
     });
   });
 });
