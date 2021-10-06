@@ -1,14 +1,24 @@
 import knex from 'knex';
 import { newPassword, comparePassword } from './databaseUtilities.js';
 
+// const db = knex({
+//   client: 'pg',
+//   connection: {
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: {
+//       rejectUnauthorized: false,
+//     },
+//   },
+// });
+
 const db = knex({
   client: 'pg',
   connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+    host : '127.0.0.1',
+    user : 'postgres',
+    password : '',
+    database : 'screenshot-gallery'
+  }
 });
 
 export async function register(email, name, password) {
@@ -109,6 +119,39 @@ export async function screenshot(email, screenshot, url) {
         url: url,
       })
       .into('screenshots');
+
+    const screenshotRows = await db
+      .select('*')
+      .from('screenshots')
+      .where('email', '=', email)
+      .orderBy('id', 'desc');
+
+    data = {
+      screenshots: screenshotRows,
+      user: {
+        email: email,
+      },
+    };
+    valid = true;
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { valid, data };
+}
+
+export async function deleteScreenshot(email, id) {
+  let valid = false;
+  let data = {};
+
+  if (!email || !id) {
+    return { valid, data };
+  }
+
+  try {
+    const deleteScreenshotRow = await db('screenshots')
+      .where('id', id)
+      .del();
 
     const screenshotRows = await db
       .select('*')

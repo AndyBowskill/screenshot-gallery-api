@@ -86,5 +86,26 @@ export default function (database) {
     }
   });
 
+  app.delete('/screenshot', async (req, res) => {
+    const { email, id } = req.body;
+
+    if (!email || !id) {
+      res.status(400).json('Error .');
+      return;
+    }
+
+    try {
+      const { valid, data } = await database.deleteScreenshot(email, id);
+
+      if (valid) {
+        res.status(200).json(data);
+      } else {
+        res.status(400).json('Error .');
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  });
+
   return app;
 }
