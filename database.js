@@ -11,7 +11,7 @@ const db = knex({
   },
 });
 
-export async function register(email, name, password) {
+export async function createRegister(email, name, password) {
   let valid = false;
   let data = {};
 
@@ -54,7 +54,7 @@ export async function register(email, name, password) {
   return { valid, data };
 }
 
-export async function signin(email, password) {
+export async function readSignin(email, password) {
   let valid = false;
   let data = {};
 
@@ -93,7 +93,7 @@ export async function signin(email, password) {
   return { valid, data };
 }
 
-export async function screenshot(email, screenshot, url) {
+export async function createScreenshot(email, screenshot, url) {
   let valid = false;
   let data = {};
 
@@ -139,9 +139,7 @@ export async function deleteScreenshot(email, id) {
   }
 
   try {
-    const deleteScreenshotRow = await db('screenshots')
-      .where('id', id)
-      .del();
+    const deleteScreenshotRow = await db('screenshots').where('id', id).del();
 
     const screenshotRows = await db
       .select('*')

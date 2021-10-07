@@ -2,15 +2,21 @@ import request from 'supertest';
 import makeApp from './app';
 import { jest } from '@jest/globals';
 
-const register = jest.fn();
-const signin = jest.fn();
-const screenshot = jest.fn();
+const createRegister = jest.fn();
+const readSignin = jest.fn();
+const createScreenshot = jest.fn();
+const deleteScreenshot = jest.fn();
 
-const app = makeApp({ register, signin, screenshot });
+const app = makeApp({
+  createRegister,
+  readSignin,
+  createScreenshot,
+  deleteScreenshot,
+});
 
 describe('POST /register', () => {
   beforeEach(() => {
-    register.mockReset();
+    createRegister.mockReset();
   });
 
   describe('when passed nothing', () => {
@@ -61,17 +67,17 @@ describe('POST /register', () => {
 
       const response = await request(app).post('/register').send(body);
 
-      expect(register.mock.calls.length).toBe(1);
-      expect(register.mock.calls[0][0]).toBe(body.email);
-      expect(register.mock.calls[0][1]).toBe(body.name);
-      expect(register.mock.calls[0][2]).toBe(body.password);
+      expect(createRegister.mock.calls.length).toBe(1);
+      expect(createRegister.mock.calls[0][0]).toBe(body.email);
+      expect(createRegister.mock.calls[0][1]).toBe(body.name);
+      expect(createRegister.mock.calls[0][2]).toBe(body.password);
     });
   });
 });
 
 describe('POST /signin', () => {
   beforeEach(() => {
-    signin.mockReset();
+    readSignin.mockReset();
   });
 
   describe('when passed nothing', () => {
@@ -111,16 +117,16 @@ describe('POST /signin', () => {
 
       const response = await request(app).post('/signin').send(body);
 
-      expect(signin.mock.calls.length).toBe(1);
-      expect(signin.mock.calls[0][0]).toBe(body.email);
-      expect(signin.mock.calls[0][1]).toBe(body.password);
+      expect(readSignin.mock.calls.length).toBe(1);
+      expect(readSignin.mock.calls[0][0]).toBe(body.email);
+      expect(readSignin.mock.calls[0][1]).toBe(body.password);
     });
   });
 });
 
 describe('POST /screenshot', () => {
   beforeEach(() => {
-    screenshot.mockReset();
+    createScreenshot.mockReset();
   });
 
   describe('when passed nothing', () => {
@@ -148,6 +154,55 @@ describe('POST /screenshot', () => {
         .send({ email: 'johnsmith@gmail.com' });
 
       expect(response.statusCode).toBe(400);
+    });
+  });
+});
+
+describe('DELETE /screenshot', () => {
+  beforeEach(() => {
+    deleteScreenshot.mockReset();
+  });
+
+  describe('when passed nothing', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app).delete('/screenshot');
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing screenshot ID', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .delete('/screenshot')
+        .send({ email: 'johnsmith@gmail.com' });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed a missing email', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app)
+        .delete('/screenshot')
+        .send({ id: 123 });
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed valid and complete data', () => {
+    test('should get back a status code of 200', async () => {
+      const body = {
+        email: 'johnsmith1@gmail.com',
+        id: 123,
+      };
+
+      const response = await request(app).delete('/screenshot').send(body);
+
+      expect(deleteScreenshot.mock.calls.length).toBe(1);
+      expect(deleteScreenshot.mock.calls[0][0]).toBe(body.email);
+      expect(deleteScreenshot.mock.calls[0][1]).toBe(body.id);
     });
   });
 });

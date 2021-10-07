@@ -21,7 +21,11 @@ export default function (database) {
     }
 
     try {
-      const { valid, data } = await database.register(email, name, password);
+      const { valid, data } = await database.createRegister(
+        email,
+        name,
+        password
+      );
 
       if (valid) {
         res.status(200).json(data);
@@ -42,7 +46,7 @@ export default function (database) {
     }
 
     try {
-      const { valid, data } = await database.signin(email, password);
+      const { valid, data } = await database.readSignin(email, password);
 
       if (valid) {
         res.status(200).json(data);
@@ -70,7 +74,7 @@ export default function (database) {
       const resScreenshotAPI = await fetch(query);
       const screenshotAPI = await resScreenshotAPI.json();
 
-      const { valid, data } = await database.screenshot(
+      const { valid, data } = await database.createScreenshot(
         email,
         screenshotAPI.screenshot,
         screenshotAPI.url
@@ -90,7 +94,7 @@ export default function (database) {
     const { email, id } = req.body;
 
     if (!email || !id) {
-      res.status(400).json('Error .');
+      res.status(400).json('Error deleting a screenshot.');
       return;
     }
 
@@ -100,7 +104,7 @@ export default function (database) {
       if (valid) {
         res.status(200).json(data);
       } else {
-        res.status(400).json('Error .');
+        res.status(400).json('Error deleting a screenshot.');
       }
     } catch (error) {
       res.status(500).json(error);
