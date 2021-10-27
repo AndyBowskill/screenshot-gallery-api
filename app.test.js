@@ -4,12 +4,14 @@ import { jest } from '@jest/globals';
 
 const createRegister = jest.fn();
 const readSignin = jest.fn();
+const readGoogleSignin = jest.fn();
 const createScreenshot = jest.fn();
 const deleteScreenshot = jest.fn();
 
 const app = makeApp({
   createRegister,
   readSignin,
+  readGoogleSignin,
   createScreenshot,
   deleteScreenshot,
 });
@@ -120,6 +122,33 @@ describe('POST /signin', () => {
       expect(readSignin.mock.calls.length).toBe(1);
       expect(readSignin.mock.calls[0][0]).toBe(body.email);
       expect(readSignin.mock.calls[0][1]).toBe(body.password);
+    });
+  });
+});
+
+describe('POST /googlesignin', () => {
+  beforeEach(() => {
+    readGoogleSignin.mockReset();
+  });
+
+  describe('when passed nothing', () => {
+    test('should get back a status code of 400', async () => {
+      const response = await request(app).post('/googlesignin');
+
+      expect(response.statusCode).toBe(400);
+    });
+  });
+
+  describe('when passed valid and complete data', () => {
+    test('should get back a status code of 200', async () => {
+      const body = {
+        email: 'johnsmith1@gmail.com',
+      };
+
+      const response = await request(app).post('/googlesignin').send(body);
+
+      expect(readGoogleSignin.mock.calls.length).toBe(1);
+      expect(readGoogleSignin.mock.calls[0][0]).toBe(body.email);
     });
   });
 });

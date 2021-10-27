@@ -58,6 +58,27 @@ export default function (database) {
     }
   });
 
+  app.post('/googlesignin', async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json('Error signing in an user.');
+      return;
+    }
+
+    try {
+      const { valid, data } = await database.readGoogleSignin(email);
+
+      if (valid) {
+        res.status(200).json(data);
+      } else {
+        res.status(400).json('Error signing in an user.');
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  });
+
   app.post('/screenshot', async (req, res) => {
     const { email, url } = req.body;
     const encodedUrl = encodeURIComponent(url);

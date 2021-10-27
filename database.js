@@ -93,6 +93,31 @@ export async function readSignin(email, password) {
   return { valid, data };
 }
 
+export async function readGoogleSignin(googleEmail) {
+  let valid = false;
+  let data = {};
+
+  try {
+    const screenshotsRows = await db
+      .select('*')
+      .from('screenshots')
+      .where('email', '=', googleEmail)
+      .orderBy('id', 'desc');
+
+    data = {
+      screenshots: screenshotsRows,
+      user: {
+        email: googleEmail,
+      },
+    };
+    valid = true;
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { valid, data };
+}
+
 export async function createScreenshot(email, screenshot, url) {
   let valid = false;
   let data = {};
