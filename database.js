@@ -1,24 +1,14 @@
 import knex from 'knex';
 import { newPassword, comparePassword } from './databaseUtilities.js';
 
-// const db = knex({
-//   client: 'pg',
-//   connection: {
-//     connectionString: process.env.DATABASE_URL,
-//     ssl: {
-//       rejectUnauthorized: false,
-//     },
-//   },
-// });
-
 const db = knex({
   client: 'pg',
   connection: {
-    host : '127.0.0.1',
-    user : 'postgres',
-    password : '',
-    database : 'screenshot-gallery'
-  }
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
 
 export async function createRegister(email, name, password) {
